@@ -64,6 +64,43 @@ if upload_file is not None:
         response_status = response.status_code
         response_text = response.text
 
+        if response_status == 200:
+            census = response.json()
+            df = pd.DataFrame(census, index=[0])
+            table_style = '''
+            <style>
+                table.dataframe {
+                    border-collapse: collapse;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    background-color: #222;
+                }
+
+                table.dataframe th, table.dataframe td {
+                    border: 1px solid #444;
+                    padding: 8px;
+                    color: #FFF;
+                }
+            </style>
+            '''
+
+            # Renderizar la tabla con el estilo CSS personalizado
+            st.markdown(table_style, unsafe_allow_html=True)
+            
+            st.table(df)
+
+
+
+
+            st.download_button(
+                label="Download csv",
+                data=df.to_csv().encode("utf-8"),
+                file_name="vehicle_census.csv",
+            )
+
+        else:
+            st.error("Error: {} - {}".format(response_status, response_text))
+
     if col2.button("License Plate Detector 🚘"):
 
         # Crea una fila con dos columnas dentro de la columna 2
